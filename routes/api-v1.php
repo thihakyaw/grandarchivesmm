@@ -1,7 +1,10 @@
 <?php
 
+use App\Models\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +17,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/random-meme', function (Request $request) {
+    $assets = Cache::get(File::FILES_CACHE_NAME);
+
+    return response()->json([
+        'data' => [
+            'image' => $assets[rand(0, Cache::get(File::FILES_CACHE_COUNT) - 1)]
+        ],
+        'message' => 'Random meme generated.'
+    ], Response::HTTP_OK);
 });
